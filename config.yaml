@@ -8,53 +8,53 @@ nodes:
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=t3.medium"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=c5.xlarge"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=r5.2xlarge"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2a,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=r5.2xlarge"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2b"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2b,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=t3.medium"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2b"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2b,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=c5.xlarge"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2c"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2c,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=t3.medium"
 - role: worker
   kubeadmConfigPatches:
   - |
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2c"
+        node-labels: "failure-domain.beta.kubernetes.io/zone=us-west-2c,failure-domain.beta.kubernetes.io/region=us-west-2,beta.kubernetes.io/instance-type=c5.xlarge"
