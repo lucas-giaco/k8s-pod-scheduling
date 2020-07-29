@@ -1,7 +1,6 @@
 # Playing with pod assignment
 
-The examples described below where took from the [official k8s docs about this topic]
-(https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+The examples described below where took from the [official k8s docs about this topic](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 
 ## Environment setup
 This repo relies on [kind](https://kind.sigs.k8s.io/) to spin up a local k8s cluster. To download it
