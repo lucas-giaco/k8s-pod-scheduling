@@ -1,13 +1,21 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
-  name: redis
+    app: node-selector
+  name: node-selector
 spec:
-  containers:
-  - name: redis-server
-    image: redis:3.2-alpine
-  dnsPolicy: ClusterFirst
-  restartPolicy: Never
-  nodeSelector:
-    beta.kubernetes.io/instance-type: r5.2xlarge
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-selector
+  template:
+    metadata:
+      labels:
+        app: node-selector
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/instance-type: r5.2xlarge
+      containers:
+      - image: nginx
+        name: node-selector

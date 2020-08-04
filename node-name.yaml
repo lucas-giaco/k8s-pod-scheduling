@@ -1,13 +1,20 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
-    run: nginx
-  name: nginx
+    app: node-name
+  name: node-name
 spec:
-  containers:
-  - image: nginx
-    name: nginx
-  dnsPolicy: ClusterFirst
-  restartPolicy: Never
-  nodeName: kind-worker
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-name
+  template:
+    metadata:
+      labels:
+        app: node-name
+    spec:
+      nodeName: kind-worker
+      containers:
+      - image: nginx
+        name: node-name
