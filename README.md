@@ -1,6 +1,14 @@
 # Playing with pod assignment
 
-The examples described below where took from the [official k8s docs about this topic](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+The examples described below are based on the [official k8s docs](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+about this topic
+
+This repo aims to help us to play around with different pod scheduling approaches without incurring
+into any costs.
+
+If you think this repo can be enhanced in any way, please fill free to
+[create an issue](https://github.com/lucas-giaco/k8s-pod-scheduling/issues/new/choose) or
+[submit a PR](https://github.com/lucas-giaco/k8s-pod-scheduling/compare)
 
 ## Environment setup
 This repo relies on [kind](https://kind.sigs.k8s.io/) to spin up a local k8s cluster. To download it
@@ -9,16 +17,14 @@ just run `make setup`
 
 To start the cluster run `make start`. This will spin up a cluster with 1 master node and 9 worker
 nodes which has the same labels than an EC2 instance acting as a worker node would have.
-This will help us to play around with different affinity constraints without incurring into any
-costs.
 
 
-If you're using a unix-like PC you may want to use tmux to have a more interactive view of how the
-pods are being scheduled
+If you're using a unix-like workstation you may want to use tmux to have a more interactive view of
+how the pods are being scheduled.
 
 
 ## Pod assignment
-We'll go through different assignment methods
+Let's go through the different scheduling methods
 
 ### Node name
 `nodeName` is the simplest way to assign a pod to a specific node and takes precedence over all
@@ -31,9 +37,11 @@ situation in the pod description.
 For further details about this field please run `kubectl explain pod.spec.nodeName`.
 
 
-Run `kubectl apply -f node-name.yaml` and verify the pod is successfully scheduled.
+Run `kubectl apply -f node-name.yaml` to create de `Deployment` that has a `nodeName` constraint. If
+you try to scale the deployment by running the `kubectl scale deployment node-name --replicas=<any-number>`
+you'll see that all the pods are being scheduled in the node `kind-worker`.
 
-NOTE: This method is not recommended for production workloads.
+NOTE: This method is **not** recommended for production workloads.
 
 ### Node selector
 `nodeSelector` is the simplest and recommended way to assign a pod to a set nodes.
@@ -44,7 +52,9 @@ Running a `kubectl describe` for the pod will provide deeper details about the i
 
 For further details about this field please run `kubectl explain pod.spec.nodeSelector`
 
-Run `kubectl apply -f node-selector.yaml` and verify the pod is successfully scheduled.
+Run `kubectl apply -f node-selector.yaml` to create a `Deployment` that has a `nodeSelector`
+constraint. Run `kubectl scale deployment node-selector --replicas=<any-number>` to create
+more pods. Note that all pods are being scheduled in the nodes `kind-worker3` and `kind-worker4`
 
 In order to get the nodes labels run `kubectl get nodes --show-labels`. You'll see an ouput like
 this:
@@ -77,9 +87,37 @@ kind-worker8         Ready    <none>   2m12s   v1.18.2   c5.xlarge
 ```
 
 ### Affinity/AntiAffinity
+When using `nodeSelector` is not enough for our requirements, the affinity/anti-affinity feature
+comes to help expanding the constraints we can express. These are the key enhancements that offers:
+
+* More expressive language: Allows matching rules besides exact matchs
+* Soft rules (a.k.a preferred): Allows declaring rules that are applied in a best-effort basis,
+preventing unscheduled (pending) pods.
+* Contraints againts other pods: Allows rules about which pods can or cannot be co-located in a
+node
+
+This feature consist on two types of affinity, node-affinity and pod-affinity. Let's take a look
+to both of them.
 
 #### Node Affinity
+Conceptually node affinity is similar to `nodeSelector` in the way that declares which pods can be
+located on each node based on node labels but allowing a more expressive syntax using operators
+like `In`, `NotIn`, `Exists`, `DoesNotExist`. `Gt`, and `Lt`.
+
+We have to types of affinity:
+* `requiredDuringSchedulingIgnoredDuringExecution`: scheduler will **ensure** conditions listed
+under this spec are meet for the pod to be scheduled
+* `preferredDuringSchedulingIgnoredDuringExecution`: scheduler will **try** to meet the conditions
+listed under this spec but if it's not possible will allow to run the pod elsewhere.
+
+Run `kubectl apply -f node-affinity.yaml` to create a `Deployment` which has both types of node
+affinity. Scale the deployment by running `kubectl scale deployment node-affinity --replicas=<any-number>`.
 
 #### Pod Affinity
+WIP
+
+#### Pod Anti Affinity
+WIP
 
 ### Taints/Tolerations
+WIP
