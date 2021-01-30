@@ -31,7 +31,7 @@ spec:
               - key: beta.kubernetes.io/instance-type
                 operator: In
                 values:
-                - t3.medium
+                - t3.large
       containers:
       - image: nginx
         name: node-affinity
