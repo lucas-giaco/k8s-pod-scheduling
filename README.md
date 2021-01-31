@@ -1,13 +1,13 @@
 # Playing with pod scheduling
 
 This repo aims to help us to play around with different pod scheduling approaches without incurring
-into any costs.
+any costs.
 
 The examples described below are based on the
 [official k8s docs](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) about
 this topic.
 
-If you think this repo can be enhanced in any way, please fill free to
+If you think this repo can be enhanced in any way, please feel free to
 [create an issue](https://github.com/lucas-giaco/k8s-pod-scheduling/issues/new/choose) or
 [submit a PR](https://github.com/lucas-giaco/k8s-pod-scheduling/compare)
 
@@ -16,7 +16,7 @@ If you think this repo can be enhanced in any way, please fill free to
 This repo relies on [kind](https://kind.sigs.k8s.io/) to spin up a local k8s cluster.
 
 To start the cluster run `kind create cluster --config .kind-config.yaml`. This will spin up a
-cluster with 1 master node and 9 worker nodes which has the same labels than an EC2 instance used
+cluster with 1 master node and 9 worker nodes that have the same labels as an EC2 instance used
 as a worker node.
 
 ## Pod scheduling
@@ -29,7 +29,7 @@ Let's go through the different scheduling methods
 other methods.
 When this setting is present in the `PodSpec` section the scheduler will ignore this pod and let
 the kubelet run it into the specified node.
-If the node doesn't have enough resources to accommodate the pod then you'll be notified of such
+If the node doesn't have enough resources to accommodate the pod then you'll be notified of such a
 situation in the pod description.
 
 Run `kubectl apply -f node-name.yaml` to create a `Deployment` that has a `nodeName` constraint. The
@@ -43,8 +43,8 @@ NOTE: This method is **not** recommended for production workloads.
 
 `nodeSelector` is the simplest recommended way to assign a pod to a set of nodes.
 The scheduler will allocate the pod based on a map of labels that the node **must** have.
-Please note that this is an **AND** operation, so if none of the available node has all the required
-labels the pod will remain in a `Pending` state.
+Please note that this is an **AND** operation, so if none of the available nodes has all the
+required labels the pod will remain in a `Pending` state.
 Running a `kubectl describe` for the pod will provide deeper details about the issue.
 
 Run `kubectl apply -f node-selector.yaml` to create a `Deployment` that has a `nodeSelector`
@@ -93,10 +93,10 @@ kind-worker8         Ready    <none>   2m12s   v1.18.2   c5.xlarge
 ### Affinity/AntiAffinity
 
 When using `nodeSelector` is not enough for our requirements, the affinity/anti-affinity feature
-comes to help expanding the constraints we can express. These are the key enhancements that offers:
+comes to help to expand the constraints we can express. These are the key enhancements that offer:
 
 * More expressive language: Allows matching rules besides exact match
-* Soft rules (a.k.a preferred): Allows declaring rules that are applied in a best-effort basis,
+* Soft rules (a.k.a preferred): This allows declaring rules that are applied on a best-effort basis,
 preventing unscheduled (pending) pods.
 * Constraints against other pods: Allows rules about which pods can or cannot be co-located in a
 node
@@ -106,14 +106,14 @@ At the time of writing we can only define two types of constraints:
 * `requiredDuringSchedulingIgnoredDuringExecution`: scheduler will **ensure** conditions listed
 under this spec are meet for the pod to be scheduled
 * `preferredDuringSchedulingIgnoredDuringExecution`: scheduler will **try** to meet the conditions
-listed under this spec but if it's not possible will allow to run the pod elsewhere.
+listed under this spec but if it's not possible will allow running the pod elsewhere.
 
 It's important to notice, as its name stands, that all these conditions are evaluated at scheduling
-time. Once the pod is running k8s won't try to meet this conditions anymore until the pod needs to
+time. Once the pod is running k8s won't try to meet these conditions anymore until the pod needs to
 be scheduled again.
 
-This feature consist on two types of affinity, node-affinity and pod-affinity. Let's take a look
-to both of them.
+This feature consists of two types of affinity, node-affinity, and pod-affinity. Let's take a look
+at both of them.
 
 #### Node Affinity
 
@@ -121,15 +121,15 @@ Conceptually node affinity is similar to `nodeSelector` in the way that declares
 located on each node based on node labels but allowing a more expressive syntax using operators
 like `In`, `NotIn`, `Exists`, `DoesNotExist`, `Gt`, and `Lt`.
 
-Run `kubectl apply -f node-affinity.yaml` to create a `Deployment` which has both types of node
+Run `kubectl apply -f node-affinity.yaml` to create a `Deployment` that has both types of node
 affinity. Looking at the pod spec we'll see that we have forced the scheduler to place the pod in
-one of the regions `us-west-2b` **or** `us-west-2c`, and if it's possible to place it a `t3.large`
+one of the regions `us-west-2b` **or** `us-west-2c` and if it's possible to place it a `t3.large`
 instance. As this last condition can't be met the scheduler will place the pod in any other
 available instance.
 
 #### Pod Affinity/AntiAffinity
 
-Pod affinity and anti-affinity allows us to place new pods on nodes based on the labels of other
+Pod affinity and anti-affinity allow us to place new pods on nodes based on the labels of other
 **already running** pods on that node.
 
 The rules are of the form "this pod should (or, in the case of anti-affinity, should not) run in a
@@ -140,38 +140,38 @@ The rule Y is a _labelSelector_ with an additional list of namespaces to which t
 The node X is defined by the _topologyKey_ which is a label key related to the node in which the
 pods are running in.
 
-Run `kubectl apply -f pod-affinity.yaml` to create a `Deployment` which has both types of pod
+Run `kubectl apply -f pod-affinity.yaml` to create a `Deployment` that has both types of pod
 affinity. Looking at the pod spec we'll see that we have forced the scheduler to place the pods in
-the same zone than each other and, if it's possible to place them in the same instance type.
+the same zone as each other and if it's possible to place them in the same instance type.
 
-Run `kubectl apply -f pod-anti-affinity.yaml` to create a `Deployment` which has both types of pod
+Run `kubectl apply -f pod-anti-affinity.yaml` to create a `Deployment` that has both types of pod
 anti-affinity. Looking at the pod spec we'll see that we have forced the scheduler to place the pods
-in different nodes than each other and, if it's possible to place them in different zones. In this
+in different nodes than each other and if it's possible to place them in different zones. In this
 particular case, if we try to scale the deployment beyond the 8 replicas we'll start seeing pending
 pods as it can't place more pods on different nodes and this is a required condition.
 
 ### Taints and Tolerations
 
-All the previous scheduling methods helps us to _attract_ pods to different sets of nodes. There
+All the previous scheduling methods help us to _attract_ pods to different sets of nodes. There
 will cases in which we may want to prevent or repel pods from being scheduled to a node. There's
-where taints comes to play.
+where taints come to play.
 
 Running `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints` we'll get a
-list of the current nodes and its taints. By default the only tainted node is the master as we don't
-want to schedule any non-critical pod in this node. The taint has a _key_, a _value_, and an
+list of the current nodes and their taints. By default, the only tainted node is the master as we
+don't want to schedule any non-critical pod in this node. The taint has a _key_, a _value_, and an
 _effect_. The effect will determine the action took by the scheduler.
 
 There're 3 different effects:
 
 * `NoSchedule`: pod won't be scheduled onto that node
 * `PreferNoSchedule`: "soft" version of `NoSchedule`
-* `NoExecute`: pod won't be schedule onto the node and if it's running will be evicted
+* `NoExecute`: pod won't be scheduled onto the node and if it's running will be evicted
 
 If we want to allow (but not require) a pod to run in a tainted node, we'll need to add tolerations
 to the pod that matches the taints present on the node. The way k8s processes multiple taints and
 tolerations is like a filter: start with all of a node's taints, then ignore the ones for which the
 pod has a matching toleration; the remaining un-ignored taints have the indicated effects on the pod.
 
-Run `kubectl apply -f pod-tolerations.yaml` to create a `Deployment` which has a toleration to allow
+Run `kubectl apply -f pod-tolerations.yaml` to create a `Deployment` that has a toleration to allow
 being scheduled onto the master node. Please note that this doesn't mean that the pod will be
-scheduled in the master node but it will allow to be scheduled there.
+scheduled in the master node but it will allow it to be scheduled there.
