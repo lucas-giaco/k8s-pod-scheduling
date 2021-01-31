@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pod-tolerations
+  name: pod-tolerations
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-tolerations
+  template:
+    metadata:
+      labels:
+        app: pod-tolerations
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - image: nginx
+        name: pod-tolerations

@@ -150,6 +150,28 @@ in different nodes than each other and, if it's possible to place them in differ
 particular case, if we try to scale the deployment beyond the 8 replicas we'll start seeing pending
 pods as it can't place more pods on different nodes and this is a required condition.
 
-### Taints/Tolerations
+### Taints and Tolerations
 
+All the previous scheduling methods helps us to _attract_ pods to different sets of nodes. There
+will cases in which we may want to prevent or repel pods from being scheduled to a node. There's
+where taints comes to play.
 
+Running `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints` we'll get a
+list of the current nodes and its taints. By default the only tainted node is the master as we don't
+want to schedule any non-critical pod in this node. The taint has a _key_, a _value_, and an
+_effect_. The effect will determine the action took by the scheduler.
+
+There're 3 different effects:
+
+* `NoSchedule`: pod won't be scheduled onto that node
+* `PreferNoSchedule`: "soft" version of `NoSchedule`
+* `NoExecute`: pod won't be schedule onto the node and if it's running will be evicted
+
+If we want to allow (but not require) a pod to run in a tainted node, we'll need to add tolerations
+to the pod that matches the taints present on the node. The way k8s processes multiple taints and
+tolerations is like a filter: start with all of a node's taints, then ignore the ones for which the
+pod has a matching toleration; the remaining un-ignored taints have the indicated effects on the pod.
+
+Run `kubectl apply -f pod-tolerations.yaml` to create a `Deployment` which has a toleration to allow
+being scheduled onto the master node. Please note that this doesn't mean that the pod will be
+scheduled in the master node but it will allow to be scheduled there.
