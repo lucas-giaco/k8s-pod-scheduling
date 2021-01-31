@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pod-affinity
+  name: pod-affinity
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-affinity
+  template:
+    metadata:
+      labels:
+        app: pod-affinity
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - pod-affinity
+            topologyKey: "failure-domain.beta.kubernetes.io/zone"
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - pod-affinity
+              topologyKey: "beta.kubernetes.io/instance-type"
+            weight: 100
+      containers:
+      - image: nginx
+        name: pod-affinity
